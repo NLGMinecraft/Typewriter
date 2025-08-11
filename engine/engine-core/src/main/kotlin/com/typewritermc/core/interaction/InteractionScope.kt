@@ -56,9 +56,9 @@ class InteractionScope(
         tryCatchSuspend { bound.initialize() }
     }
 
-    suspend fun teardown(force: Boolean = false) {
+    suspend fun teardown() {
         tryCatchSuspend { this.bound.teardown() }
-        tryCatchSuspend { interaction.teardown(force) }
+        tryCatchSuspend { interaction.teardown() }
     }
 
     suspend fun addBoundStateOverride(

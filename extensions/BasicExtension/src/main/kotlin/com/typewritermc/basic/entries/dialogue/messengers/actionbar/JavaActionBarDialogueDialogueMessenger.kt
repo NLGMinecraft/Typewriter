@@ -9,7 +9,6 @@ import com.typewritermc.engine.paper.interaction.chatHistory
 import com.typewritermc.engine.paper.snippets.snippet
 import com.typewritermc.engine.paper.utils.*
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.entity.Player
 import java.time.Duration
@@ -68,7 +67,6 @@ class JavaActionBarDialogueDialogueMessenger(
 
         val message = text.asMini()
             .splitPercentage(percentage)
-            .color(NamedTextColor.WHITE)
 
         // Find out how much padding is needed to fill the rest of the action bar.
         // As the action bar is centered, adding padding to the end of the message
