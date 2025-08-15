@@ -3,6 +3,18 @@ title: 0.9.X API changes
 ---
 
 # 0.9.X API changes
+:::danger[Kotlin Upgrade Required]
+Typewriter v0.9 requires the Kotlin JVM plugin version 2.2.10 and the Typewriter module plugin version 2.0.0. Update your Gradle configuration:
+
+```kotlin showLineNumbers
+plugins {
+    kotlin("jvm") version "2.2.10"
+    id("com.typewritermc.module-plugin") version "2.0.0"
+}
+```
+
+Extensions targeting v0.9 will fail to compile with older Kotlin versions.
+:::
 
 ## `ThreadType` Deprecation
 

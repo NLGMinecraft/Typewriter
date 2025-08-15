@@ -212,6 +212,7 @@ fun <E : AudienceEntry> List<Ref<out AudienceEntry>>.descendants(klass: KClass<E
         return flatMap {
             val child = it.get() ?: return@flatMap emptyList<Ref<E>>()
             if (klass.isInstance(child)) {
+                @Suppress("UNCHECKED_CAST")
                 listOf(it as Ref<E>)
             } else if (child is AudienceFilterEntry) {
                 child.children.descendants(klass)
