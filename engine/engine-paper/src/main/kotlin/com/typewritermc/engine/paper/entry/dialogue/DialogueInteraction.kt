@@ -83,6 +83,7 @@ class DialogueInteraction(
 
         if (currentMessenger.state == MessengerState.FINISHED) {
             isActive = false
+            factDatabase.modify(player, currentMessenger.modifiers)
             DialogueTrigger.NEXT_OR_COMPLETE.triggerFor(player, currentMessenger.context)
         } else if (currentMessenger.state == MessengerState.CANCELLED) {
             isActive = false
@@ -115,10 +116,9 @@ class DialogueInteraction(
         }
         messenger.dispose()
 
-        factDatabase.modify(player, messenger.modifiers)
     }
 
-    override suspend fun teardown(force: Boolean) {
+    override suspend fun teardown() {
         isActive = false
         cleanupEntry(true)
         Dispatchers.UntickedAsync.launch {
@@ -149,9 +149,9 @@ val Player.speakersInDialogue: Set<Ref<SpeakerEntry>>
         return sequence.speakers
     }
 
-fun Player.playSpeakerSound(speaker: SpeakerEntry?) {
-    val sound = speaker?.sound ?: return
-    playSound(sound)
+fun Player.playSpeakerSound(speaker: SpeakerEntry?, context: InteractionContext? = this.interactionContext) {
+    val sound = speaker?.sound?.get(this, context) ?: return
+    playSound(sound, context)
 }
 
 enum class DialogueTrigger : EventTrigger {

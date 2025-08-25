@@ -95,7 +95,7 @@ class TemporalInteraction(
 
     private val canEnd get() = actions.all { it.canFinish(frame) }
 
-    override suspend fun teardown(force: Boolean) {
+    override suspend fun teardown() {
         if (state != PLAYING) return
         state = ENDING
         val originalFrame = frame
@@ -113,8 +113,6 @@ class TemporalInteraction(
                 e.printStackTrace()
             }
         }
-
-        if (force) return
 
         Dispatchers.UntickedAsync.switchContext {
             AsyncCinematicEndEvent(player, originalFrame, pageId).callEvent()

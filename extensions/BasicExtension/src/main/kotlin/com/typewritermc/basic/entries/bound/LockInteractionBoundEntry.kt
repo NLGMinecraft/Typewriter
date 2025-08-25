@@ -168,7 +168,7 @@ class LockInteractionBound(
         handler =
             player.geyserConnection?.let {
                 BedrockLockInteractionBoundHandler(player, it, startPosition)
-            } ?: JavaLockInteractionBoundHandler(player, targetPosition is ConstVar<*>, startPosition)
+            } ?: JavaLockInteractionBoundHandler(player, targetPosition !is ConstVar<*>, startPosition)
         handler?.initialize()
     }
 
@@ -270,7 +270,8 @@ private class JavaLockInteractionBoundHandler(
         }
 
         val target = to.withY { it + positionYCorrection }.toProperty()
-        entity.move(target)
+        entity.rotateHead(target.yaw, target.pitch)
+        entity.teleport(target.toPacketLocation())
 
         if (player.position.distanceSquared(to) > MAX_DISTANCE_SQUARED) {
             player.teleportAsync(to.toBukkitLocation()).await()
@@ -312,7 +313,7 @@ private class JavaLockInteractionBoundHandler(
 
     companion object {
         // The default interpolation duration in frames.
-        const val BASE_INTERPOLATION = 10
+        const val BASE_INTERPOLATION = 7
     }
 }
 

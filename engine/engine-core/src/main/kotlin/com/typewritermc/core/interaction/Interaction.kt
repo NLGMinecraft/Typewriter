@@ -16,7 +16,7 @@ interface Interaction {
     val context: InteractionContext
     suspend fun initialize(): Result<Unit>
     suspend fun tick(deltaTime: Duration)
-    suspend fun teardown(force: Boolean = false)
+    suspend fun teardown()
 }
 
 typealias ContextBuilder = InteractionContextBuilder.() -> Unit
