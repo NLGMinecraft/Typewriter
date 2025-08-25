@@ -60,7 +60,7 @@ class JavaInputDialogueDialogueMessenger<T : Any>(
             return triggers(value)
         }
 
-    override var isCompleted: Boolean
+    override var animationComplete: Boolean
         // We don't want to be able to complete the dialogue if the player clicks on a npc.
         get() {
             if (!infoText.startsWith("<red>")) {

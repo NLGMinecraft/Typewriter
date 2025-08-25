@@ -25,7 +25,7 @@ class VarSerializer : DataSerializer<Var<*>> {
                 return obj
             }
 
-            is MappedVar<*> -> {
+            is MappedVar<*, *> -> {
                 throw IllegalStateException("Could not serialize mapped var")
             }
 

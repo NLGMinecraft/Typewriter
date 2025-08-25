@@ -133,7 +133,7 @@ class LockInteractionBound(
                 }
 
                 if (!packet.isJump && !packet.isShift) return@PLAYER_INPUT
-                DialogueTrigger.NEXT_OR_COMPLETE.triggerFor(player, player.interactionContext ?: context())
+                DialogueTrigger.NEXT_OR_SKIP_ANIMATION.triggerFor(player, player.interactionContext ?: context())
             }
             // We want to fake the player's location on the client because otherwise they will interact with
             // themselves crash kicking themselves off the server.
@@ -268,8 +268,23 @@ private class JavaLockInteractionBoundHandler(
             setupEntity(to)
             return
         }
-
         val target = to.withY { it + positionYCorrection }.toProperty()
+
+        /// If the distance is too big, we make a jump.
+        if (from.distanceSquared(target) > MAX_DISTANCE_SQUARED) {
+            val newEntity = createEntity()
+            newEntity.spawn(target.toPacketLocation())
+            newEntity.addViewer(player.uniqueId)
+
+            player.teleportAsync(target.toBukkitLocation()).await()
+            player.spectateEntity(newEntity)
+
+            entity.despawn()
+            entity.remove()
+            entity = newEntity
+            return
+        }
+
         entity.rotateHead(target.yaw, target.pitch)
         entity.teleport(target.toPacketLocation())
 

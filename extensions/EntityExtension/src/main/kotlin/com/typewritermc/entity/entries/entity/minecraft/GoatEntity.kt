@@ -20,37 +20,40 @@ import com.typewritermc.entity.entries.data.minecraft.living.applyLivingEntityDa
 import com.typewritermc.entity.entries.entity.WrapperFakeEntity
 import org.bukkit.entity.Player
 
-@Entry("pig_definition", "A pig entity", Colors.ORANGE, "icon-park-solid:pig")
-@Tags("pig_definition")
+@Entry("goat_definition", "A goat entity", Colors.ORANGE, "mdi:goat")
+@Tags("goat_definition")
 /**
- * The `PigDefinition` class is an entry that shows up as a pig in-game.
+ * The `GoatDefinition` class is an entry that represents a goat entity.
  *
- * ## How could this be used?
- * This could be used to create a pig entity.
+ * This can be used to create a goat that supports generic, living, and ageable data.
  */
-class PigDefinition(
+class GoatDefinition(
     override val id: String = "",
     override val name: String = "",
     override val displayName: Var<String> = ConstVar(""),
     override val sound: Var<Sound> = ConstVar(Sound.EMPTY),
-    @OnlyTags("generic_entity_data", "living_entity_data", "mob_data", "ageable_data", "pig_data")
+    @OnlyTags("generic_entity_data", "living_entity_data", "mob_data", "ageable_data", "goat_data")
     override val data: List<Ref<EntityData<*>>> = emptyList(),
 ) : SimpleEntityDefinition {
-    override fun create(player: Player): FakeEntity = PigEntity(player)
+    override fun create(player: Player): FakeEntity = GoatEntity(player)
 }
 
-@Entry("pig_instance", "An instance of a pig entity", Colors.YELLOW, "icon-park-solid:pig")
-class PigInstance(
+@Entry("goat_instance", "An instance of a goat entity", Colors.YELLOW, "mdi:goat")
+/**
+ * The `GoatInstance` class is an entry that represents an instance of a goat entity.
+ */
+class GoatInstance(
     override val id: String = "",
     override val name: String = "",
-    override val definition: Ref<PigDefinition> = emptyRef(),
+    override val definition: Ref<GoatDefinition> = emptyRef(),
     override val spawnLocation: Position = Position.ORIGIN,
-    @OnlyTags("generic_entity_data", "living_entity_data", "mob_data", "ageable_data", "pig_data")
+    @OnlyTags("generic_entity_data", "living_entity_data", "mob_data", "ageable_data", "goat_data")
     override val data: List<Ref<EntityData<*>>> = emptyList(),
     override val activity: Ref<out SharedEntityActivityEntry> = emptyRef(),
 ) : SimpleEntityInstance
-private class PigEntity(player: Player) : WrapperFakeEntity(
-    EntityTypes.PIG,
+
+private class GoatEntity(player: Player) : WrapperFakeEntity(
+    EntityTypes.GOAT,
     player,
 ) {
     override fun applyProperty(property: EntityProperty) {
@@ -62,3 +65,7 @@ private class PigEntity(player: Player) : WrapperFakeEntity(
         if (applyLivingEntityData(entity, property)) return
     }
 }
+
+// Skipped data (no existing data entry available):
+// - Goat: screaming (GoatMeta.isScreaming)
+// - Goat: horn state (left/right) — not exposed by current EntityLib and no data entry

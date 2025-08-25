@@ -20,37 +20,40 @@ import com.typewritermc.entity.entries.data.minecraft.living.applyLivingEntityDa
 import com.typewritermc.entity.entries.entity.WrapperFakeEntity
 import org.bukkit.entity.Player
 
-@Entry("pig_definition", "A pig entity", Colors.ORANGE, "icon-park-solid:pig")
-@Tags("pig_definition")
+@Entry("polar_bear_definition", "A polar bear entity", Colors.ORANGE, "mdi:bear")
+@Tags("polar_bear_definition")
 /**
- * The `PigDefinition` class is an entry that shows up as a pig in-game.
+ * The `PolarBearDefinition` class is an entry that represents a polar bear entity.
  *
- * ## How could this be used?
- * This could be used to create a pig entity.
+ * This can be used to create a polar bear that supports generic, living, and ageable data.
  */
-class PigDefinition(
+class PolarBearDefinition(
     override val id: String = "",
     override val name: String = "",
     override val displayName: Var<String> = ConstVar(""),
     override val sound: Var<Sound> = ConstVar(Sound.EMPTY),
-    @OnlyTags("generic_entity_data", "living_entity_data", "mob_data", "ageable_data", "pig_data")
+    @OnlyTags("generic_entity_data", "living_entity_data", "mob_data", "ageable_data", "polar_bear_data")
     override val data: List<Ref<EntityData<*>>> = emptyList(),
 ) : SimpleEntityDefinition {
-    override fun create(player: Player): FakeEntity = PigEntity(player)
+    override fun create(player: Player): FakeEntity = PolarBearEntity(player)
 }
 
-@Entry("pig_instance", "An instance of a pig entity", Colors.YELLOW, "icon-park-solid:pig")
-class PigInstance(
+@Entry("polar_bear_instance", "An instance of a polar bear entity", Colors.YELLOW, "mdi:bear")
+/**
+ * The `PolarBearInstance` class is an entry that represents an instance of a polar bear entity.
+ */
+class PolarBearInstance(
     override val id: String = "",
     override val name: String = "",
-    override val definition: Ref<PigDefinition> = emptyRef(),
+    override val definition: Ref<PolarBearDefinition> = emptyRef(),
     override val spawnLocation: Position = Position.ORIGIN,
-    @OnlyTags("generic_entity_data", "living_entity_data", "mob_data", "ageable_data", "pig_data")
+    @OnlyTags("generic_entity_data", "living_entity_data", "mob_data", "ageable_data", "polar_bear_data")
     override val data: List<Ref<EntityData<*>>> = emptyList(),
     override val activity: Ref<out SharedEntityActivityEntry> = emptyRef(),
 ) : SimpleEntityInstance
-private class PigEntity(player: Player) : WrapperFakeEntity(
-    EntityTypes.PIG,
+
+private class PolarBearEntity(player: Player) : WrapperFakeEntity(
+    EntityTypes.POLAR_BEAR,
     player,
 ) {
     override fun applyProperty(property: EntityProperty) {
@@ -62,3 +65,6 @@ private class PigEntity(player: Player) : WrapperFakeEntity(
         if (applyLivingEntityData(entity, property)) return
     }
 }
+
+// Skipped data (no existing data entry available):
+// - PolarBear: standingUp (PolarBearMeta.isStandingUp)
