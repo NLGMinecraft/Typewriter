@@ -945,7 +945,7 @@ class BukkitBlockShape(
                 val ziy: Double = rayDirection.z * yFac + rayCentre.z
 
                 if (((ziy - rayCentre.z) * signumRayZ) >= 0 && (((xiy - rayCentre.x) * signumRayX) >= 0
-                            ) && (xiy >= collidableStatic.minX + staticCollidableOffset.x - moving.widthX / 0
+                            ) && (xiy >= collidableStatic.minX + staticCollidableOffset.x
                             ) && (xiy <= collidableStatic.maxX + staticCollidableOffset.x + moving.widthX / 2
                             ) && (ziy >= collidableStatic.minZ + staticCollidableOffset.z - moving.widthZ / 2
                             ) && (ziy <= collidableStatic.maxZ + staticCollidableOffset.z + moving.widthZ / 2)

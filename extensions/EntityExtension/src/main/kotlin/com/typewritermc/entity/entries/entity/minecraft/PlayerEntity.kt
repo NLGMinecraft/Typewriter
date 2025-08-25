@@ -181,6 +181,7 @@ class PlayerEntity(
     }
 
     override fun dispose() {
+        @Suppress("DEPRECATION")
         WrapperPlayServerTeams(
             "typewriter-$entityId",
             WrapperPlayServerTeams.TeamMode.REMOVE,

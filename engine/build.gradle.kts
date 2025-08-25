@@ -1,6 +1,6 @@
 plugins {
     id("java")
-    kotlin("jvm") version "2.0.21"
+    kotlin("jvm") version "2.2.10"
     id("java-library")
     `maven-publish`
     id("io.github.goooler.shadow") version "8.1.7" apply false

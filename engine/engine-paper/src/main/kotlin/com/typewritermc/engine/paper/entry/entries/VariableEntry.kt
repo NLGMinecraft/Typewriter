@@ -57,7 +57,7 @@ fun <T : Any> Var<T>.get(player: Player?, interactionContext: InteractionContext
     contract {
         returns(null) implies (player == null)
     }
-    if (this is ConstVar<*>) return this.value as T
+    if (this is ConstVar<T>) return this.value
     if (player == null) return null
     return get(player, interactionContext)
 }
