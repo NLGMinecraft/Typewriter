@@ -15,11 +15,13 @@ import com.typewritermc.engine.paper.entry.entries.*
 import com.typewritermc.engine.paper.entry.inAudience
 import com.typewritermc.engine.paper.entry.temporal.temporalCommand
 import com.typewritermc.engine.paper.entry.triggerFor
+import com.typewritermc.engine.paper.facts.FactData
 import com.typewritermc.engine.paper.interaction.chatHistory
 import com.typewritermc.engine.paper.logger
 import com.typewritermc.engine.paper.plugin
 import com.typewritermc.engine.paper.ui.CommunicationHandler
 import com.typewritermc.engine.paper.utils.asMini
+import com.typewritermc.engine.paper.utils.isFloodgate
 import com.typewritermc.engine.paper.utils.msg
 import com.typewritermc.engine.paper.utils.sendMini
 import com.typewritermc.loader.Extension
@@ -29,6 +31,7 @@ import com.typewritermc.loader.ExtensionLoader
 import kotlinx.coroutines.Dispatchers
 import net.kyori.adventure.inventory.Book
 import org.bukkit.command.CommandSender
+import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.entity.Player
 import org.koin.java.KoinJavaComponent.get
 import java.time.format.DateTimeFormatter
@@ -327,7 +330,9 @@ private fun CommandTree.factsCommand() = literal("facts") {
     literal("inspect") {
         page("page", PageType.STATIC) { page ->
             executePlayerOrTarget { target ->
-                val facts = page().entries.filterIsInstance<ReadableFactEntry>().sortedBy { it.name }
+                val facts = page().entries.filterIsInstance<ReadableFactEntry>()
+                    .map { it to it.readForPlayersGroup(target) }
+                    .sortedByDescending { (_, data) -> data.value }
                 sender.sendMini("Facts on page <blue>${page().name}</blue> for <green>${target.name}</green>:")
 
                 if (facts.isEmpty()) {
@@ -335,8 +340,8 @@ private fun CommandTree.factsCommand() = literal("facts") {
                     return@executePlayerOrTarget
                 }
 
-                for (fact in facts) {
-                    sender.sendMini(fact.format(target))
+                for ((fact, data) in facts) {
+                    sender.sendMini(fact.format(target, data))
                 }
             }
         }
@@ -344,6 +349,8 @@ private fun CommandTree.factsCommand() = literal("facts") {
 
     executePlayerOrTarget { target ->
         val factEntries = Query.find<ReadableFactEntry>().toList()
+            .map { it to it.readForPlayersGroup(target) }
+            .sortedByDescending { (_, data) -> data.value }
         if (factEntries.isEmpty()) {
             sender.msg("There are no facts available.")
             return@executePlayerOrTarget
@@ -352,8 +359,8 @@ private fun CommandTree.factsCommand() = literal("facts") {
         sender.sendMini("\n\n")
         sender.msg("<green>${target.name}</green> has the following facts:\n")
 
-        for (entry in factEntries.take(10)) {
-            sender.sendMini(entry.format(target))
+        for ((entry, data) in factEntries.take(10)) {
+            sender.sendMini(entry.format(target, data))
         }
 
         val remaining = factEntries.size - 10
@@ -371,14 +378,13 @@ private fun CommandTree.factsCommand() = literal("facts") {
 }
 
 private val formatter = DateTimeFormatter.ofPattern("HH:mm:ss dd/MM/yyyy")
-private fun ReadableFactEntry.format(player: Player): String {
-    val data = readForPlayersGroup(player)
+private fun ReadableFactEntry.format(player: Player, data: FactData = readForPlayersGroup(player)): String {
     return "<hover:show_text:'${
         comment.replace(
             Regex(" +"),
             " "
         ).replace("'", "\\'")
-    }\n\n<gray><i>Click to modify'><click:suggest_command:'/tw facts set $name ${data.value} ${player.name}'><gray> - </gray><blue>${formattedName}:</blue> ${data.value} <gray><i>(${
+    }\\n\\n<gray><i>Click to modify'><click:suggest_command:'/tw facts set $name ${data.value} ${player.name}'><gray> - </gray><blue>${formattedName}:</blue> ${data.value} <gray><i>(${
         formatter.format(
             data.lastUpdate
         )
@@ -414,6 +420,7 @@ private fun CommandTree.connectCommand() = literal("connect") {
             return@executes
         }
 
+
         val bookTitle = "<blue>Connect to the server</blue>".asMini()
         val bookAuthor = "<blue>Typewriter</blue>".asMini()
 
@@ -427,8 +434,37 @@ private fun CommandTree.connectCommand() = literal("connect") {
 				|<gray><i>Because of security reasons, this link will expire in 5 minutes.</i></gray>
 			""".trimMargin().asMini()
 
-        val book = Book.book(bookTitle, bookAuthor, bookPage)
+        if (player.isFloodgate) {
+            sender.sendMessage(bookPage)
+            return@executes
+        }
+
+        val book = Book.book(bookTitle, bookAuthor, listOf(bookPage))
         player.openBook(book)
+    }
+
+    playerResolver("target") { player ->
+        executes {
+            if (source.sender !is ConsoleCommandSender) {
+                sender.msg("You can only connect as other players from the console.")
+                return@executes
+            }
+            val targets = player().resolve(source)
+            if (targets.isEmpty()) {
+                sender.msg("No players found.")
+                return@executes
+            }
+
+            if (targets.size > 1) {
+                sender.msg("You can only connect as one player at a time.")
+                return@executes
+            }
+
+            val target = targets.first()
+
+            val url = communicationHandler.generateUrl(target.uniqueId)
+            sender.msg("Connect to<blue> $url </blue>to start the connection.")
+        }
     }
 }
 
