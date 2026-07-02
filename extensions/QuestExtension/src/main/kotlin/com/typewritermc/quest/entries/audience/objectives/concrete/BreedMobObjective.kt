@@ -39,7 +39,7 @@ class BreedMobObjective(
     @Help("Track the progress of the BreedMobObjective using a fact and set its target value.")
     override val progressTracking: CacheableFactObjectiveProgressTracking = CacheableFactObjectiveProgressTracking(),
     override val display: Var<String> = ConstVar(""),
-    override val completionTriggers: List<TriggerableEntry> = emptyList(),
+    override val completionTriggers: List<Ref<TriggerableEntry>> = emptyList(),
     override val priorityOverride: Optional<Int> = Optional.empty(),
 ) : CachableFactObjective {
 

@@ -35,7 +35,7 @@ interface CachableFactObjective : ObjectiveEntry {
     val progressTracking: CacheableFactObjectiveProgressTracking
 
     @Help("The entries that will trigger once the objective is completed.")
-    val completionTriggers: List<TriggerableEntry>
+    val completionTriggers: List<Ref<TriggerableEntry>>
 
     fun incrementFact(player: Player, amount: Int = 0) {
         if (!player.inAudience(this)) return
@@ -54,7 +54,7 @@ interface CachableFactObjective : ObjectiveEntry {
 
         // Check if completed
         if (!completedBefore && completedAfter) {
-            completionTriggers.triggerAllFor(player, player.interactionContext ?: context())
+            completionTriggers.triggerEntriesFor(player, player.interactionContext ?: context())
         }
     }
 
